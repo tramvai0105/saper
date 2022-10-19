@@ -1,17 +1,20 @@
 import './App.css';
 import React, {useState, useEffect, useRef} from "react";
 import Tile from "./components/Tile"
+import useSound from 'use-sound';
+import alahSong from './sounds/alah.mp3';
 
 function App() {
   const WIDTH = 25;
   const HEIGHT = 16;
-  const BOMBS = 15;
+  const BOMBS = 50;
   var STATUS = true;
 
   var tilesArray = Array.from(Array(HEIGHT*WIDTH), () =>
       [0, "closed"])
   var [tiles, setTiles] = useState(tilesArray);
   var [mode, setMode] = useState("open")
+  var [alah, {stop}] = useSound(alahSong, { volume: 0.5 })
 
   useEffect(()=>{
     if(STATUS){
@@ -122,9 +125,11 @@ function App() {
 
     }
     if(mode=="open"){
-      if(tiles[id][1]==0){openEmptyTile(id)}
-      setTiles(tiles.map(tile => (tile[0]==id) ? [tile[0],tile[1],"solved"] : tile))
-      if(tiles[id][1]==9){gameOver()}
+      if(tiles[id][2]!=="flaged"){
+        if(tiles[id][1]==0){openEmptyTile(id)}
+        setTiles(tiles.map(tile => (tile[0]==id) ? [tile[0],tile[1],"solved"] : tile))
+        if(tiles[id][1]==9){gameOver()}
+      }
     }
     if(mode=="flag"){
       if(tiles[id][2] != "solved" && tiles[id][2] != "flaged"){
@@ -138,10 +143,12 @@ function App() {
   function gameOver(){
     setTiles(tiles.map(tile => (tile[1]==9) ? [tile[0],tile[1],"solved"] : tile))
     setMode("over")
+    alah()
   }
 
   function restart(){
     clearTiles()
+    stop()
   }
 
   function handleEnter(){
@@ -156,7 +163,7 @@ function App() {
       <div className="game">
         <div className="controls">
           <h1>{mode}</h1>
-          <button onClick={handleEnter}>Change mode</button>
+          <button onClick={handleEnter}>Change mode (SPACE)</button>
           <button onClick={restart}>Restart</button>
         </div>
         <div className="board">

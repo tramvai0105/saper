@@ -12,11 +12,11 @@ const Tile = ({change, id,status, num}) => {
     value="";
   }
   if(status=="flaged"){
-    value="$"
+    value=""
   }
   if(status=="solved"){
-    if(num=="0"){value="~"}
-    if(num=="9"){value="*"}
+    if(num=="0"){value=""}
+    if(num=="9"){value=""}
     if(num > 0 && num < 9){value=num}
   }
 
@@ -26,7 +26,8 @@ const Tile = ({change, id,status, num}) => {
       className={"tile"
          + " noselect"
          + (status=="closed" ? " closedtile": "")
-         + (status=="flaged" ? " closedtile": "")}>
+         + (status=="flaged" ? " closedtile flagedtile": "")
+         + (num==9 && status=="solved" ? " bomb" : "")}>
       {value}
     </span>
   );

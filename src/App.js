@@ -19,6 +19,14 @@ function App() {
     }
   }, [])
 
+  useEffect(()=>{
+    checkWin()
+  }, [tiles])
+
+  function checkWin(){
+    console.log(1)
+  }
+
   function clearTiles(){
     tiles.forEach(function(currentValue,index) {
           this[index] = [index, 0, "closed"]
@@ -133,7 +141,7 @@ function App() {
         setTiles(tiles.map(tile => (tile[0]==id) ? [tile[0],tile[1],"closed"] : tile))}
       }
     }
-  
+
 
   function gameOver(){
     setTiles(tiles.map(tile => (tile[1]==9) ? [tile[0],tile[1],"solved"] : tile))

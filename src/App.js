@@ -5,7 +5,7 @@ import Tile from "./components/Tile"
 function App() {
   const WIDTH = 25;
   const HEIGHT = 16;
-  const BOMBS = 50;
+  const BOMBS = 15;
   var STATUS = true;
 
   var tilesArray = Array.from(Array(HEIGHT*WIDTH), () =>
@@ -24,7 +24,6 @@ function App() {
   }, [tiles])
 
   function checkWin(){
-    console.log(1)
   }
 
   function clearTiles(){
@@ -89,39 +88,32 @@ function App() {
   function openEmptyTile(index){
     let arr = [];
     arr = tiles;
-    if(index % 25 != 0){arr[index-1][2] = "solved";
+    console.log(index)
+    if(index % 25){arr[index-1][2] = "solved";
       if((index-1) % 25 && arr[index-1][1]==0 && arr[index-2][2] != "solved"){
         arr[index-2][2] = "solved"
         openEmptyTile(index-1)}}
+      if(((index-1) % 25) == 0 && arr[index-1][1]==0){openEmptyTile(index-1)}
     if((index+1) % 25 != 0){arr[index+1][2] = "solved";
       if((index+2) % 25 && arr[index+1][1]==0 && arr[index+2][2] != "solved"){
         arr[index+2][2] = "solved"
         openEmptyTile(index+1)}}
-    if(index > 24){arr[index-25][2] = "solved";
-      if(index > 49 && arr[index-25][1]==0 && arr[index-50][2] != "solved"){
+      if(((index+2) % 25) == 0 && arr[index+1][1]==0){openEmptyTile(index+1)}
+    if(index > 25){arr[index-25][2] = "solved";
+      if(index > 50 && arr[index-25][1]==0 && arr[index-50][2] != "solved"){
         arr[index-50][2] = "solved"
-        openEmptyTile(index-25)}if(arr[index-25][1]==0){openEmptyTile(index-25)}
-      }
-    if(index % 25 && index > 24){arr[index-26][2] = "solved";
-      if(index > 49 && arr[index-26][1]==0 && arr[index-51][2] != "solved"){
-        arr[index-51][2] = "solved"
-        openEmptyTile(index-26)}}
-    if((index+1) % 25 != 0 && index > 24){arr[index-24][2] = "solved";
-      if(index > 49 && arr[index-24][1]==0 && arr[index-49][2] != "solved"){
-        arr[index-49][2] = "solved"
-        openEmptyTile(index-24)}}
+        openEmptyTile(index-25)}
+      if(index <= 50 && index >= 0 && arr[index-25][1]==0){openEmptyTile(index-25)}
+    }
     if(index < 375){arr[index+25][2] = "solved";
       if(index < 350 && arr[index+25][1]==0 && arr[index+50][2] != "solved"){
         arr[index+50][2] = "solved"
-        openEmptyTile(index+25)}}
-    if(index % 25 && index < 375){arr[index+24][2] = "solved";
-      if(index < 350 && arr[index+24][1]==0 && arr[index+49][2] != "solved"){
-        arr[index+49][2] = "solved"
-        openEmptyTile(index+24)}}
-    if((index+1) % 25 != 0 && index < 375){arr[index+26][2] = "solved";
-      if(index < 350 && arr[index+26][1]==0 && arr[index+51][2] != "solved"){
-        arr[index+51][2] = "solved"
-        openEmptyTile(index+26)}}
+        openEmptyTile(index+25)}
+      if(index <= 400 && index >= 350 && arr[index+25][1]==0){openEmptyTile(index+25)}}
+    if(index % 25 && index > 25){arr[index-26][2] = "solved";}
+    if((index+1) % 25 != 0 && index > 25){arr[index-24][2] = "solved";}
+    if(index % 25 && index < 375){arr[index+24][2] = "solved";}
+    if((index+1) % 25 != 0 && index < 375){arr[index+26][2] = "solved";}
     setTiles(arr)
   }
 

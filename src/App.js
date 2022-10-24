@@ -7,14 +7,35 @@ import alahSong from './sounds/alah.mp3';
 function App() {
   const WIDTH = 25;
   const HEIGHT = 16;
-  const BOMBS = 50;
+  const BOMBS = 10;
   var STATUS = true;
 
   var tilesArray = Array.from(Array(HEIGHT*WIDTH), () =>
-      [0, "closed"])
+    new Object())
+
+  function * coordsgenerator(){
+    for(let h = 0; h < HEIGHT; h++){
+      for(let w = 0; w < WIDTH; w++){
+        yield [h,w]
+      }
+    }
+  }
+
+  var coords = coordsgenerator()
+
+  tilesArray.forEach(function(value, i){
+    let c = coords.next();
+    this[i].index = i;
+    this[i].y = c.value[0];
+    this[i].x = c.value[1];
+    this[i].num = 0;
+    this[i].status = "closed";
+  }, tilesArray)
+
   var [tiles, setTiles] = useState(tilesArray);
-  var [mode, setMode] = useState("open")
-  var [alah, {stop}] = useSound(alahSong, { volume: 0.5 })
+  var [mode, setMode] = useState("open");
+  var [alah, {stop}] = useSound(alahSong, { volume: 0.5 });
+  var [flags, setFlags] = useState(0);
 
   useEffect(()=>{
     if(STATUS){
@@ -22,18 +43,18 @@ function App() {
     }
   }, [])
 
-  useEffect(()=>{
-    checkWin()
-  }, [tiles])
+  //
+  // useEffect(()=>{
+  //   checkWin()
+  // }, [tiles])
 
   function checkWin(){
   }
 
   function clearTiles(){
-    tiles.forEach(function(currentValue,index) {
-          this[index] = [index, 0, "closed"]
-    },tiles)
+    setTiles(tiles.map(tile => changeObj(tile, "num", 0)))
     placeBombs()
+    setTiles(tiles.map(tile => changeObj(tile, "status", "closed")))
     setMode("open")
   }
 
@@ -55,97 +76,170 @@ function App() {
     },[key])
   }
 
-  tilesArray.forEach(function(currentValue,index) {
-        this[index] = [index].concat(currentValue)
-  }, tilesArray);
+  function getRandomInt(max) {
+    return Math.floor(Math.random() * max);
+  }
 
   function placeBombs() {
-      let counter = 0;
-      let gen_tiles = [];
-      gen_tiles = tiles.map(function(tile){
-      if (Math.random()>0.875 && counter < BOMBS) {
-        counter++; return [tile[0],9,tile[2]]}
-      else {return tile}
-      })
-      gen_tiles = placeNumbers(gen_tiles)
-      setTiles(gen_tiles)
-      STATUS = false;
+    let counter = BOMBS;
+    while(counter){
+      let row = getRandomInt(HEIGHT-1);
+      let column = getRandomInt(WIDTH-1);
+      setTiles(tiles.map(tile => (tile.x === column && tile.y === row)
+      ? changeObj(tile, "num", 9)
+      : tile))
+      counter--;
+    }
+    setTiles(placeNumbers(tiles))
+    STATUS = false;
+  }
+
+  function getTile(arr, tile, dir){
+    if(dir == "left"){
+      return arr.filter(function(v){
+        return(v.x == tile.x - 1 && v.y == tile.y)})[0]}
+    if(dir == "right"){
+      return arr.filter(function(v){
+        return(v.x == tile.x + 1 && v.y == tile.y)})[0]}
+    if(dir == "up"){
+      return arr.filter(function(v){
+        return(v.x == tile.x && v.y == tile.y - 1)})[0]}
+    if(dir == "down"){
+      return arr.filter(function(v){
+        return(v.x == tile.x && v.y == tile.y + 1)})[0]}
+    if(dir == "up-left"){
+      return arr.filter(function(v){
+        return(v.x == tile.x - 1 && v.y == tile.y - 1)})[0]}
+    if(dir == "up-right"){
+      return arr.filter(function(v){
+        return(v.x == tile.x + 1 && v.y == tile.y - 1)})[0]}
+    if(dir == "down-left"){
+      return arr.filter(function(v){
+        return(v.x == tile.x - 1 && v.y == tile.y + 1)})[0]}
+    if(dir == "down-right"){
+      return arr.filter(function(v){
+        return(v.x == tile.x + 1 && v.y == tile.y + 1)})[0]}
+  }
+
+  function checkOpenTiles(tile){
+    if(tile.x != 0 && getTile(tiles, tile, "left").num == 0
+    && getTile(tiles, tile, "left").status == "solved"){return true}
+    if(tile.x != 24 && getTile(tiles, tile, "right").num == 0
+    && getTile(tiles, tile, "right").status == "solved"){return true}
+    if(tile.y != 0 && getTile(tiles, tile, "up").num == 0
+    && getTile(tiles, tile, "up").status == "solved"){return true}
+    if(tile.y != 15 && getTile(tiles, tile, "down").num == 0
+    && getTile(tiles, tile, "down").status == "solved"){return true}
+    if(tile.y != 0 && tile.x != 0 && getTile(tiles, tile, "up-left").num == 0
+    && getTile(tiles, tile, "up-left").status == "solved"){return true}
+    if(tile.x != 24 && tile.y != 0 && getTile(tiles, tile, "up-right").num == 0
+    && getTile(tiles, tile, "up-right").status == "solved"){return true}
+    if(tile.y != 15 && tile.x != 0 && getTile(tiles, tile, "down-left").num == 0
+    && getTile(tiles, tile, "down-left").status == "solved"){return true}
+    if(tile.y != 15 && tile.x != 24 && getTile(tiles, tile, "down-right").num == 0
+    && getTile(tiles, tile, "down-right").status == "solved"){return true}
+    else{return false}
   }
 
   function placeNumbers(arr) {
-      arr.forEach(function(tile, index){
-        if (tile[1] != 9){
-          if(index % 25 != 0 && arr[index-1][1]==9){tile[1]+=1}
-          if((index+1) % 25 != 0 && arr[index+1][1]==9){tile[1]+=1}
-          if(index > 24 && arr[index-25][1]==9){tile[1]+=1}
-          if(index % 25 && index > 24 && arr[index-26][1]==9){tile[1]+=1}
-          if((index+1) % 25 != 0 && index > 24 && arr[index-24][1]==9){tile[1]+=1}
-          if(index < 375 && arr[index+25][1]==9){tile[1]+=1}
-          if(index % 25 && index < 375 && arr[index+24][1]==9){tile[1]+=1}
-          if((index+1) % 25 != 0 && index < 375 && arr[index+26][1]==9){tile[1]+=1}
+      arr.forEach(function(tile){
+        if (tile.num != 9){
+          if(tile.x != 0 && getTile(arr, tile, "left").num == 9){addNum(tile);}
+          if(tile.x != 24 && getTile(arr, tile, "right").num == 9){addNum(tile);}
+          if(tile.y != 0 && getTile(arr, tile, "up").num == 9){addNum(tile);}
+          if(tile.y != 15 && getTile(arr, tile, "down").num == 9){addNum(tile);}
+          if(tile.y != 0 && tile.x != 0 && getTile(arr, tile, "up-left").num == 9){addNum(tile);}
+          if(tile.x != 24 && tile.y != 0 && getTile(arr, tile, "up-right").num == 9){addNum(tile);}
+          if(tile.y != 15 && tile.x != 0 && getTile(arr, tile, "down-left").num == 9){addNum(tile);}
+          if(tile.y != 15 && tile.x != 24 && getTile(arr, tile, "down-right").num == 9){addNum(tile);}
         }
       })
     return arr
   }
 
-  function openEmptyTile(index){
-    let arr = [];
-    arr = tiles;
-    console.log(index)
-    if(index % 25){arr[index-1][2] = "solved";
-      if((index-1) % 25 && arr[index-1][1]==0 && arr[index-2][2] != "solved"){
-        arr[index-2][2] = "solved"
-        openEmptyTile(index-1)}}
-      if(((index-1) % 25) == 0 && arr[index-1][1]==0){openEmptyTile(index-1)}
-    if((index+1) % 25 != 0){arr[index+1][2] = "solved";
-      if((index+2) % 25 && arr[index+1][1]==0 && arr[index+2][2] != "solved"){
-        arr[index+2][2] = "solved"
-        openEmptyTile(index+1)}}
-      if(((index+2) % 25) == 0 && arr[index+1][1]==0){openEmptyTile(index+1)}
-    if(index > 25){arr[index-25][2] = "solved";
-      if(index > 50 && arr[index-25][1]==0 && arr[index-50][2] != "solved"){
-        arr[index-50][2] = "solved"
-        openEmptyTile(index-25)}
-      if(index <= 50 && index >= 0 && arr[index-25][1]==0){openEmptyTile(index-25)}
-    }
-    if(index < 375){arr[index+25][2] = "solved";
-      if(index < 350 && arr[index+25][1]==0 && arr[index+50][2] != "solved"){
-        arr[index+50][2] = "solved"
-        openEmptyTile(index+25)}
-      if(index <= 400 && index >= 350 && arr[index+25][1]==0){openEmptyTile(index+25)}}
-    if(index % 25 && index > 25){arr[index-26][2] = "solved";}
-    if((index+1) % 25 != 0 && index > 25){arr[index-24][2] = "solved";}
-    if(index % 25 && index < 375){arr[index+24][2] = "solved";}
-    if((index+1) % 25 != 0 && index < 375){arr[index+26][2] = "solved";}
+  function openEmptyTile(id){
+    let arr = tiles;
+      if(arr[id].x != 0){
+        changeObj(getTile(arr, arr[id], "left"), "status", "solved")}
+      if(arr[id].x != 24){
+        changeObj(getTile(arr, arr[id], "right"), "status", "solved")}
+      if(arr[id].y != 0){
+        changeObj(getTile(arr, arr[id], "up"), "status", "solved")}
+      if(arr[id].y != 15){
+        changeObj(getTile(arr, arr[id], "down"), "status", "solved")}
+      if(arr[id].y != 0 && arr[id].x != 0){
+        changeObj(getTile(arr, arr[id], "up-left"), "status", "solved")}
+      if(arr[id].y != 0 && arr[id].x != 24){
+        changeObj(getTile(arr, arr[id], "up-right"), "status", "solved")}
+      if(arr[id].y != 15 && arr[id].x != 0){
+        changeObj(getTile(arr, arr[id], "down-left"), "status", "solved")}
+      if(arr[id].y != 15 && arr[id].x != 24){
+        changeObj(getTile(arr, arr[id], "down-right"), "status", "solved")}
     setTiles(arr)
   }
 
-  const openTile = (id) => {
-    if(mode=="over"){
+  function openEmptyTiles(){
+    let changes = 1;
+    while(changes){
+      changes = 0
+        setTiles(tiles.forEach(function(t){
+        if(t.status != "solved" && t.num == 0){
+          if(checkOpenTiles(t)){
+            t.status = "solved";
+            changes = 1;
+          }
+        }
+      }))
+    }
+    tiles.forEach((t)=>{
+      if(t.status == "solved" && t.num == 0){
+        openEmptyTile(t.index)
+      }
+    })
 
+  }
+
+  function changeObj(obj, key, value){
+    obj[key] = value;
+    return obj;
+  }
+
+  function addNum(obj){
+    obj.num += 1;
+    return obj;
+  }
+
+  const openTile = (id, x, y) => {
+    if(mode=="over"){
     }
     if(mode=="open"){
-      if(tiles[id][2]!=="flaged"){
-        if(tiles[id][1]==0){openEmptyTile(id)}
-        setTiles(tiles.map(tile => (tile[0]==id) ? [tile[0],tile[1],"solved"] : tile))
-        if(tiles[id][1]==9){gameOver()}
+      if(tiles[id].status != "flaged"){
+        if(tiles[id].num == 0){openEmptyTile(id); openEmptyTiles()}
+        setTiles(tiles.map(tile => (tile.index==id) ? changeObj(tile, "status", "solved") : tile))
+        if(tiles[id].num == 9){gameOver()}
       }
     }
     if(mode=="flag"){
-      if(tiles[id][2] != "solved" && tiles[id][2] != "flaged"){
-        setTiles(tiles.map(tile => (tile[0]==id) ? [tile[0],tile[1],"flaged"] : tile))}
-      if(tiles[id][2] == "flaged"){
-        setTiles(tiles.map(tile => (tile[0]==id) ? [tile[0],tile[1],"closed"] : tile))}
-      }
+      if(tiles[id].status === "closed" && tiles[id].status !== "flaged"){
+        setTiles(tiles.map(tile => (tile.index==id) ? changeObj(tile, "status", "flaged") : tile))}
+      else if(tiles[id].status === "flaged"){
+        setTiles(tiles.map(tile => (tile.index==id) ? changeObj(tile, "status", "closed") : tile))}
     }
+  }
 
+  const flagClick = (id) => {
+    if(tiles[id].status === "closed" && tiles[id].status !== "flaged"){
+      setTiles(tiles.map(tile => (tile.index==id) ? changeObj(tile, "status", "flaged") : tile))}
+    else if(tiles[id].status === "flaged"){
+      setTiles(tiles.map(tile => (tile.index==id) ? changeObj(tile, "status", "closed") : tile))}
+  }
 
   function gameOver(){
-    setTiles(tiles.map(tile => (tile[1]==9) ? [tile[0],tile[1],"solved"] : tile))
+    setTiles(tiles.map(tile => (tile.num==9) ? changeObj(tile, "status", "solved") : tile))
     setMode("over")
     alah()
   }
-
+  //
   function restart(){
     clearTiles()
     stop()
@@ -161,18 +255,18 @@ function App() {
   return (
     <div className="App">
       <div className="game">
-        <div className="controls">
-          <h1>{mode}</h1>
-          <button onClick={handleEnter}>Change mode (SPACE)</button>
-          <button onClick={restart}>Restart</button>
-        </div>
+        <button onClick={restart}>RESTART</button>
+        <h1>{mode}</h1>
         <div className="board">
         {tiles.map(tile => <Tile
+          key={tile.index}
           change={openTile}
-          id={tile[0]}
-          key={tile[0]}
-          status={tile[2]}
-          num={tile[1]}/>)}
+          flag={flagClick}
+          id = {tile.index}
+          x = {tile.x}
+          y = {tile.y}
+          status={tile.status}
+          num = {tile.num}/>)}
         </div>
       </div>
     </div>

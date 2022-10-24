@@ -1,14 +1,23 @@
 body {
   background-image: url(./png/back.jpg);
   background-repeat: no-repeat;
-  background-size: 2000px;
+  background-size: 1920px;
+  margin: 0;
+}
+
+#root {
+  width: 100%;
+  margin: 0;
 }
 
 .game {
+  zoom:1.2;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  margin: 0;
+  width: 100%
 }
 
 .controls {
@@ -23,7 +32,7 @@ body {
   width: 998px;
   height: 639px;
   border: 1px solid black;
-  grid-template-columns: repeat(25, 40px)
+  grid-template-columns: repeat(25, 40px);
 }
 
 span {

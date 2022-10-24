@@ -1,9 +1,14 @@
 import React from "react";
 
-const Tile = ({change, id,status, num}) => {
+const Tile = ({change, flag, id, x, y, status, num}) => {
 
   const tileClick = () => {
-    change(id)
+    change(id, x, y)
+  }
+
+  const rightClick = (e) => {
+    e.preventDefault()
+    flag(id)
   }
 
   let value;
@@ -23,6 +28,7 @@ const Tile = ({change, id,status, num}) => {
   return (
     <span
       onClick={tileClick}
+      onContextMenu={rightClick}
       className={"tile"
          + " noselect"
          + (status=="closed" ? " closedtile": "")

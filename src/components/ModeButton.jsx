@@ -13,8 +13,9 @@ const ModeButton = ({pos, change, mode}) => {
         +(mode=="flag" ? " flag" : "")
         +(mode=="open" ? " open" : "")
         +(mode=="over" ? " over" : "")
-        +((pos < 40) ? " bottom" : "")
-        +((pos > 50) ? " top" : "")}>
+        +(mode=="win" ? " win" : "")
+        +((pos < 40 && mode!="win") ? " bottom" : "")
+        +((pos > 70 && mode!="win") ? " top" : "")}>
     </button>
   );
 };

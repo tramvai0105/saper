@@ -20,7 +20,6 @@ function App() {
 
   useEffect(() => {
     window.addEventListener('scroll', handleScroll, { passive: true });
-    console.log(scrollPosition)
 
     return () => {
         window.removeEventListener('scroll', handleScroll);
@@ -60,12 +59,21 @@ function App() {
     }
   }, [])
 
-  //
-  // useEffect(()=>{
-  //   checkWin()
-  // }, [tiles])
+  useEffect(()=>{
+    tiles.forEach(function(tile){
+      if(tile["status"]=="flaged"){setFlags(flags++)}
+    })
+    if(flags==BOMBS && checkFlaged()){
+      win()
+    }
+  }, [tiles])
 
-  function checkWin(){
+  function checkFlaged(){
+    let check = 0;
+    tiles.forEach(function(tile){
+      if (tile.num == 9 && tile.status == "flaged"){check++}
+    })
+    if(check == BOMBS){return true}else{return false}
   }
 
   function clearTiles(){
@@ -227,6 +235,7 @@ function App() {
   }
 
   const openTile = (id, x, y) => {
+    setFlags(0)
     if(mode=="over"){
     }
     if(mode=="open"){
@@ -245,6 +254,7 @@ function App() {
   }
 
   const flagClick = (id) => {
+    setFlags(0)
     if(tiles[id].status === "closed" && tiles[id].status !== "flaged"){
       setTiles(tiles.map(tile => (tile.index==id) ? changeObj(tile, "status", "flaged") : tile))}
     else if(tiles[id].status === "flaged"){
@@ -260,6 +270,11 @@ function App() {
   function restart(){
     clearTiles()
     stop()
+  }
+
+  function win(){
+    setMode("win")
+    setTimeout(restart, 5000)
   }
 
   function changeMode(){

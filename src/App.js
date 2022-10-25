@@ -3,12 +3,29 @@ import React, {useState, useEffect, useRef} from "react";
 import Tile from "./components/Tile"
 import useSound from 'use-sound';
 import alahSong from './sounds/alah.mp3';
+import ModeButton from "./components/ModeButton"
 
 function App() {
   const WIDTH = 25;
   const HEIGHT = 16;
-  const BOMBS = 10;
+  const BOMBS = 50;
   var STATUS = true;
+
+  var [scrollPosition, setScrollPosition] = useState(0);
+
+  const handleScroll = () => {
+    const position = window.pageYOffset;
+    setScrollPosition(position);
+  };
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    console.log(scrollPosition)
+
+    return () => {
+        window.removeEventListener('scroll', handleScroll);
+    };
+  }, [scrollPosition]);
 
   var tilesArray = Array.from(Array(HEIGHT*WIDTH), () =>
     new Object())
@@ -245,6 +262,12 @@ function App() {
     stop()
   }
 
+  function changeMode(){
+    if(mode=="open"){setMode("flag")}
+    if(mode=="flag"){setMode("open")}
+    if(mode=="over"){restart()}
+  }
+
   function handleEnter(){
     if(mode=="open"){setMode("flag")}
     if(mode=="flag"){setMode("open")}
@@ -255,8 +278,7 @@ function App() {
   return (
     <div className="App">
       <div className="game">
-        <button onClick={restart}>RESTART</button>
-        <h1>{mode}</h1>
+        <ModeButton pos={scrollPosition} change={changeMode} mode={mode}></ModeButton>
         <div className="board">
         {tiles.map(tile => <Tile
           key={tile.index}

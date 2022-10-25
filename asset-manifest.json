@@ -1,17 +1,17 @@
 {
   "files": {
-    "main.css": "/saper/static/css/main.3ba74d67.css",
+    "main.css": "/saper/static/css/main.9801db07.css",
     "main.js": "/saper/static/js/main.a53e9535.js",
     "static/js/845.8fa8953e.chunk.js": "/saper/static/js/845.8fa8953e.chunk.js",
     "static/media/back.jpg": "/saper/static/media/back.eab61fe46ca6d3c24ba7.jpg",
     "static/media/alah.mp3": "/saper/static/media/alah.4ba97045050574df3cfb.mp3",
     "index.html": "/saper/index.html",
-    "main.3ba74d67.css.map": "/saper/static/css/main.3ba74d67.css.map",
+    "main.9801db07.css.map": "/saper/static/css/main.9801db07.css.map",
     "main.a53e9535.js.map": "/saper/static/js/main.a53e9535.js.map",
     "845.8fa8953e.chunk.js.map": "/saper/static/js/845.8fa8953e.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.3ba74d67.css",
+    "static/css/main.9801db07.css",
     "static/js/main.a53e9535.js"
   ]
 }

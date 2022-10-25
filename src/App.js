@@ -8,7 +8,7 @@ import ModeButton from "./components/ModeButton"
 function App() {
   const WIDTH = 25;
   const HEIGHT = 16;
-  const BOMBS = 50;
+  const BOMBS = 5;
   var STATUS = true;
 
   var [scrollPosition, setScrollPosition] = useState(0);
@@ -63,6 +63,7 @@ function App() {
     tiles.forEach(function(tile){
       if(tile["status"]=="flaged"){setFlags(flags++)}
     })
+    console.log(flags)
     if(flags==BOMBS && checkFlaged()){
       win()
     }
@@ -110,10 +111,13 @@ function App() {
     while(counter){
       let row = getRandomInt(HEIGHT-1);
       let column = getRandomInt(WIDTH-1);
-      setTiles(tiles.map(tile => (tile.x === column && tile.y === row)
-      ? changeObj(tile, "num", 9)
-      : tile))
-      counter--;
+      if(tiles.filter(function(tile){
+        return(tile.x == column && tile.y == row && tile.num != 9)})[0])
+        {
+        setTiles(tiles.map(tile => (tile.x === column && tile.y === row)
+        ? changeObj(tile, "num", 9)
+        : tile))
+        counter--;}
     }
     setTiles(placeNumbers(tiles))
     STATUS = false;

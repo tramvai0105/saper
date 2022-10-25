@@ -1,17 +1,17 @@
 {
   "files": {
-    "main.css": "/saper/static/css/main.51ebc33b.css",
-    "main.js": "/saper/static/js/main.ebf0f348.js",
+    "main.css": "/saper/static/css/main.073e2df4.css",
+    "main.js": "/saper/static/js/main.49a56a75.js",
     "static/js/845.8fa8953e.chunk.js": "/saper/static/js/845.8fa8953e.chunk.js",
     "static/media/back.jpg": "/saper/static/media/back.eab61fe46ca6d3c24ba7.jpg",
     "static/media/alah.mp3": "/saper/static/media/alah.4ba97045050574df3cfb.mp3",
     "index.html": "/saper/index.html",
-    "main.51ebc33b.css.map": "/saper/static/css/main.51ebc33b.css.map",
-    "main.ebf0f348.js.map": "/saper/static/js/main.ebf0f348.js.map",
+    "main.073e2df4.css.map": "/saper/static/css/main.073e2df4.css.map",
+    "main.49a56a75.js.map": "/saper/static/js/main.49a56a75.js.map",
     "845.8fa8953e.chunk.js.map": "/saper/static/js/845.8fa8953e.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.51ebc33b.css",
-    "static/js/main.ebf0f348.js"
+    "static/css/main.073e2df4.css",
+    "static/js/main.49a56a75.js"
   ]
 }

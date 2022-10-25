@@ -21,7 +21,7 @@ body {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  margin: 50px 0 20px 0;
+  margin: 50px 0 0 0;
   width: 100%
 }
 
@@ -37,7 +37,6 @@ body {
 
 .mode-button{
   position: absolute;
-  top: 150px;
   left: 50px;
   width: 100px;
   height: 100px;
@@ -126,17 +125,19 @@ span {
     transform: translateX(-175px);
   }
   .top{
-    top: 0px;
+    position: fixed;
+    top: 0;
   }
   .bottom{
-    top: 300px;
+    position: fixed;
+    bottom: 0;
   }
   .game{
     align-items: flex-start;
     margin: 0;
   }
   .mode-button{
-    left: 70%;
+    left: 50%;
   }
 }
 

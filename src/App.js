@@ -51,8 +51,8 @@ function App() {
 
   var [tiles, setTiles] = useState(tilesArray);
   var [mode, setMode] = useState("open");
-  var [alah, {stop}] = useSound(alahSong, { volume: 0.08 });
-  var [winSound, {stop}] = useSound(winSong, { volume: 0.2 });
+  var [alah, stopAlah] = useSound(alahSong, { volume: 0.08 });
+  var [winSound, stopWinSound] = useSound(winSong, { volume: 0.2 });
   var [flags, setFlags] = useState(0);
 
   useEffect(()=>{
@@ -327,7 +327,8 @@ function App() {
   //
   function restart(){
     clearTiles()
-    stop()
+    stopAlah.stop()
+    stopWinSound.stop()
   }
 
   function win(){

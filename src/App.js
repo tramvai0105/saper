@@ -3,6 +3,7 @@ import React, {useState, useEffect, useRef} from "react";
 import Tile from "./components/Tile"
 import useSound from 'use-sound';
 import alahSong from './sounds/alah.mp3';
+import winSong from './sounds/win.mp3';
 import ModeButton from "./components/ModeButton"
 
 function App() {
@@ -51,6 +52,7 @@ function App() {
   var [tiles, setTiles] = useState(tilesArray);
   var [mode, setMode] = useState("open");
   var [alah, {stop}] = useSound(alahSong, { volume: 0.08 });
+  var [winSound, {stop}] = useSound(winSong, { volume: 0.2 });
   var [flags, setFlags] = useState(0);
 
   useEffect(()=>{
@@ -330,6 +332,7 @@ function App() {
 
   function win(){
     setMode("win")
+    winSound()
     setTimeout(restart, 5000)
   }
 

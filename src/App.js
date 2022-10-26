@@ -8,7 +8,7 @@ import ModeButton from "./components/ModeButton"
 function App() {
   const WIDTH = 25;
   const HEIGHT = 16;
-  const BOMBS = 5;
+  const BOMBS = 50;
   var STATUS = true;
 
   var [scrollPosition, setScrollPosition] = useState(0);
@@ -50,7 +50,7 @@ function App() {
 
   var [tiles, setTiles] = useState(tilesArray);
   var [mode, setMode] = useState("open");
-  var [alah, {stop}] = useSound(alahSong, { volume: 0.5 });
+  var [alah, {stop}] = useSound(alahSong, { volume: 0.08 });
   var [flags, setFlags] = useState(0);
 
   useEffect(()=>{
@@ -63,7 +63,6 @@ function App() {
     tiles.forEach(function(tile){
       if(tile["status"]=="flaged"){setFlags(flags++)}
     })
-    console.log(flags)
     if(flags==BOMBS && checkFlaged()){
       win()
     }
@@ -170,6 +169,58 @@ function App() {
     else{return false}
   }
 
+  function getAround(tile){
+    let arr = []
+    if(tile.x != 0){
+      arr.push(getTile(tiles, tile, "left"))
+    }
+    if(tile.x != 24){
+      arr.push(getTile(tiles, tile, "right"))
+    }
+    if(tile.y != 0){
+      arr.push(getTile(tiles, tile, "up"))
+    }
+    if(tile.y != 15){
+      arr.push(getTile(tiles, tile, "down"))
+    }
+    if(tile.y != 0 && tile.x != 0){
+      arr.push(getTile(tiles, tile, "up-left"))
+    }
+    if(tile.x != 24 && tile.y != 0){
+      arr.push(getTile(tiles, tile, "up-right"))
+    }
+    if(tile.y != 15 && tile.x != 0){
+      arr.push(getTile(tiles, tile, "down-left"))
+    }
+    if(tile.y != 15 && tile.x != 24){
+      arr.push(getTile(tiles, tile, "down-right"))
+    }
+    return arr
+  }
+
+  function checkQuickOpen(tile){
+    let bombs = tile.num;
+    let flagedTiles = 0;
+    let flagedBombs = 0;
+    let arr = getAround(tile)
+    arr.forEach((t)=>{
+      if(t.status == "flaged"){flagedTiles++}
+      if(t.num == 9
+      && t.status == "flaged"){flagedBombs++}
+    })
+    if(bombs == flagedTiles){
+      if(flagedBombs < flagedTiles){gameOver()}
+      else if(flagedBombs = flagedTiles){
+        tiles.forEach((t)=>{
+          if(arr.includes(t)){if(t.status=="closed"){
+            setTiles(tiles.map
+              (tile => (tile.index==t.index) ? changeObj(tile, "status", "solved") : tile))
+            if(t.num == 0){openEmptyTile(t.index); openEmptyTiles()}}}
+        })
+        }
+      }
+  }
+
   function placeNumbers(arr) {
       arr.forEach(function(tile){
         if (tile.num != 9){
@@ -243,11 +294,12 @@ function App() {
     if(mode=="over"){
     }
     if(mode=="open"){
-      if(tiles[id].status != "flaged"){
+      if(tiles[id].status != "flaged" && tiles[id].status != "solved"){
         if(tiles[id].num == 0){openEmptyTile(id); openEmptyTiles()}
         setTiles(tiles.map(tile => (tile.index==id) ? changeObj(tile, "status", "solved") : tile))
         if(tiles[id].num == 9){gameOver()}
       }
+      else if(tiles[id].status == "solved" && tiles[id].num != 0){checkQuickOpen(tiles[id])}
     }
     if(mode=="flag"){
       if(tiles[id].status === "closed" && tiles[id].status !== "flaged"){
